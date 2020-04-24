@@ -1,0 +1,28 @@
+{
+	"hostname": {
+		"flag": "-d",
+        "long-flag": "--hostname",
+        "default":"http://hack-yourself-first.com/",
+		"help": "A hostname to connect to (e.g. 'www.google.com').",
+        "nargs": "?",
+        "type" : " "
+	},
+
+	"port-range": {
+		"flag": "-p",
+        "long-flag": "--port",
+        "default": [21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 445, 993, 995, 1723, 3306, 3389, 5900, 8080],
+		"help": "A range of port numbers in which to scan.",
+        "nargs" : "*",
+        "type": 1
+	},
+
+    "protocol": {
+        "flag": "-c",
+        "long-flag": "--protocol",
+        "default": "TCP",
+        "help": "Desired communication protocol to transmit over (e.g. TCP or UDP)",
+        "nargs": "?",
+        "type": " "
+    }
+}
