@@ -10,10 +10,6 @@
 #include <netdb.h>
 #define PORTS_MAX 20
 
-// TODO: Clean code, reformat where appropriate.
-// TODO: Multi-thread.
-// TODO: Test.
-
 struct addrinfo host, *phost;
 
 void scanPort(char *hostname, int port_number) { 
@@ -22,19 +18,14 @@ void scanPort(char *hostname, int port_number) {
     struct timeval timeout;
     struct sockaddr_in client;
     socklen_t client_addr_len;
-    int socket_response, socket_error, sockrlen;
+    int socket_response, sockrlen;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
-    
-    bzero((char *) &client, sizeof(client));
-
     if ( sock != -1 ) {
         
         client.sin_addr.s_addr = inet_addr(hostname);
         client.sin_family = AF_INET;
         client.sin_port = htons(port_number);
         client_addr_len = sizeof(client);
-        
-        printf("%d (%d), %s\n", client.sin_port,port_number, hostname); 
 
         printf("SOCK: %d\n", fcntl(sock, F_GETFL, 0));
 
@@ -44,34 +35,15 @@ void scanPort(char *hostname, int port_number) {
 
         FD_ZERO(&settr);
         FD_SET(sock, &settr);
-        timeout.tv_sec = 2;
+        timeout.tv_sec = 20;
         timeout.tv_usec = 0;
 
         socket_response = connect(sock, (struct sockaddr *)&client, sizeof(client));
-        if ( errno != EINPROGRESS ) { 
-            printf("%d\n", errno);
+        if ( socket_response != EINPROGRESS ) {
+            perror(strerror(errno));
             exit(0);
         }
-        
         socket_response = select(sock+1, NULL, &settr, NULL, &timeout);
-        switch(socket_response) {
-            case 0:
-                printf("Cannot connect (timeout)\n");
-                return 0;
-            case -1:
-                printf("Error during wait period %d\n", errno);
-            default:
-                sockrlen = sizeof(socket_error);
-                getsockopt(sock, SOL_SOCKET, SO_ERROR, &socket_error, &sockrlen);
-                if ( socket_error == 0 ) {
-                    printf("Connected\n");
-                    return 1;
-                } else {
-                    printf("Failed to connect %d\n", socket_error);
-                    return 0;
-                }
-        }
-
         if ( socket_response == 1 ) {
             sockrlen = sizeof(socket_response);
             getsockopt(sock, SOL_SOCKET, SO_ERROR, &socket_response, &sockrlen);
@@ -137,9 +109,9 @@ int main(int argc, char *argv[]){
     
     char ip_addr[15];
     getAddr(ip_addr, hostname, ports);
-    printf("Args: %s %d\n", ip_addr, ports[0]);
-    scanPort(ip_addr, ports[0]); 
-    free(ports); // Important to free up allocated memory.
+    printf("%s\n", ip_addr);
     
+    free(ports); // Important to free up allocated memory.
+    scanPort(hostname, ports[0]);
     return 0;
 }
