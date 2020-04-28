@@ -20,8 +20,6 @@ int getArgs(int* port_array, int argc, char *argv[]) {
     char *port_arg;
     int d_port_arg = 0;
     
-    printf("Parsing arguments... \n");
-
     while ((opt = getopt(argc, argv, "a:p")) != -1)
         switch(opt) { 
             case 'a': // Address string is present.
@@ -39,7 +37,6 @@ int getArgs(int* port_array, int argc, char *argv[]) {
                            d_port_arg += (((int)port_arg[c])-48)*(pow(10, ((arglen-1)-c)));
                        }
                        port_array[i] = d_port_arg; // Set port in port array.
-                       printf("Port set: %d\n", port_array[i]); 
                        d_port_arg = 0; // Reset port numeric.
                        arg_index++; i++; 
                    } else break;
